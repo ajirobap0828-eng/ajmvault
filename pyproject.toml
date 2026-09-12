@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ajmvault"
+version = "0.1.0"
+description = "A CLI tool to search and download public domain books from Project Gutenberg"
+requires-python = ">=3.9"
+dependencies = [
+    "requests",
+]
+
+[project.scripts]
+ajmvault = "ajmvault.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
