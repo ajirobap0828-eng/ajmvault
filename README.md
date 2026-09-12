@@ -51,25 +51,13 @@ ajmvault
 Needs Python 3.9+. `requests` and `rich` install automatically as dependencies.
 
 ## Usage
-
-ajmvault> <title> search by title
-ajmvault> <title> by <author> author helps narrow results
-ajmvault> path change your download folder
-ajmvault> help see all commands
-ajmvault> quit exit
-
-
-## How it's put together
-
-src/ajmvault/
-   main.py # the CLI loop — search, pick, format, 
- download
-   parse_book.py # cleans up Gutenberg's and Open 
- Library's different JSON shapes
-   ui.py # colors, banner, styling
-
-
-Gutenberg and Open Library return data in completely different shapes. `parse_book.py` normalizes both into one format so the rest of the app never has to care which source a book came from.
+```
+ajmvault> <title>                  search by title
+ajmvault> <title> by <author>      author helps narrow results
+ajmvault> path                     change your download folder
+ajmvault> help                     see all commands
+ajmvault> quit                     exit
+```
 
 ## What's next
 
