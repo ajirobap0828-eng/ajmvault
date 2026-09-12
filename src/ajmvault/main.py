@@ -21,13 +21,13 @@ ACCENT_SAGE = "#7C9473"
 SUCCESS = "#7FA66A"
 ERROR = "#C75C5C"
 
-# 1. module-level setting: where downloads land ("." = current folder)
+# module-level setting: where downloads land ("." = current folder)
 download_path = "."
 
 CONFIG_FILE = "config.json"
 
 
-# --- load saved settings on startup, falling back to defaults safely ---
+# load saved settings on startup, falling back to defaults safely
 def load_config():
     global download_path
 
@@ -49,7 +49,7 @@ def load_config():
         print(f"Warning: saved path '{saved_path}' no longer exists, using default.")
 
 
-# --- save current settings to disk ---
+# save current settings to disk 
 def save_config():
     data = {"download_path": download_path}
     try:
@@ -59,7 +59,7 @@ def save_config():
         print(f"Warning: couldn't save config: {err}")
 
 
-# --- fetch from Open Library instead of Gutenberg ---
+# fetch from Open Library instead of Gutenberg 
 def fetch_openlibrary(query):
     response = requests.get(
         "https://openlibrary.org/search.json",
@@ -68,7 +68,7 @@ def fetch_openlibrary(query):
     response.raise_for_status()
     return response.json()
 
-# --- Step 2: fetch, driven by the user's query ---
+# fetch, driven by the user's query
 def fetch_books(query):
     """Fetch raw Gutendex results for a given search query."""
     response = requests.get(
@@ -79,7 +79,7 @@ def fetch_books(query):
     return response.json()
 
 
-# --- Step 3: parse every result into a clean dict ---
+# parse every result into a clean dict 
 def parse_all_results(data):
     books = []
     for entry in data.get("results", []):
@@ -95,6 +95,22 @@ def parse_all_openlibrary_results(data):
 def display_menu(books, cap=10):
     from rich.table import Table
     from rich.panel import Panel
+
+    if not books:
+        console.print()
+        console.print(
+            Panel(
+                "[bold]No books found.[/bold]\n\n"
+                "Try a different spelling, or include an author's name "
+                "e.g. 'pride and prejudice by jane austen'.",
+                title="[bold]NO RESULTS[/bold]",
+                title_align="left",
+                border_style="red",
+                padding=(1, 1),
+            )
+        )
+        console.print()
+        return []
 
     shown = books[:cap]
 
@@ -134,7 +150,7 @@ def display_menu(books, cap=10):
 
     return shown
 
-# --- check Gutenberg for a downloadable match, only when a book is picked ---
+# check Gutenberg for a downloadable match, only when a book is picked
 def find_gutenberg_match(title, author):
     try:
         data = fetch_books(title)
@@ -156,14 +172,14 @@ def find_gutenberg_match(title, author):
 
     return None  # title existed on Gutenberg, but never by this author
 
-# --- make a title safe to use as a Windows filename ---
+# make a title safe to use as a Windows filename 
 def safe_filename(title):
     name = re.sub(r'[<>:"/\\|?*]', "_", title or "")
     name = name.strip(" .")
     return name or "book"
 
 
-# --- 5. uniqueness checked at the FULL path, not just the bare filename ---
+# uniqueness checked at the FULL path, not just the bare filename
 def unique_filename(filepath):
     directory = os.path.dirname(filepath)
     filename = os.path.basename(filepath)
@@ -176,7 +192,7 @@ def unique_filename(filepath):
 
 
 
-# --- 4. download respects download_path via os.path.join ---
+# 4. download respects download_path via os.path.join
 def download_book(book, format_choice):
     from rich.progress import (
         Progress,
@@ -330,7 +346,7 @@ def download_book(book, format_choice):
         )
     )
     
-# --- 2 + 7. the path command: popup picker (no arg) or typed path (with arg) ---
+# the path command: popup picker (no arg) or typed path (with arg)
 def handle_path(argument=""):
     global download_path
 
@@ -357,7 +373,7 @@ def handle_path(argument=""):
         print(f"That folder doesn't exist: {new_path}")
 
 
-# --- ask the user which format to download, only offering what's available ---
+# ask the user which format to download, only offering what's available
 def choose_format(book):
     has_txt = bool(book.get("txt_url"))
     has_epub = bool(book.get("epub_url"))
@@ -371,13 +387,13 @@ def choose_format(book):
     if has_epub and not has_txt:
         return "epub"
 
-    # both exist -> ask
+    # both exist... ask
     choice = input("Which format? (txt/epub, default txt): ").strip().lower()
     if choice == "epub":
         return "epub"
-    return "txt"  # empty input, "txt", or anything invalid -> default to txt
+    return "txt"  # empty input, "txt", or anything invalid... default to txt
 
-# --- search command: fetch -> parse -> display -> pick -> download ---
+# search command: fetch  parse  display  pick  download 
 def handle_search(query):
     title, author = split_title_and_author(query)
     search_query = f"{title} {author}".strip()  # Open Library takes one combined string
@@ -385,7 +401,7 @@ def handle_search(query):
     try:
         data = fetch_openlibrary(search_query)
     except requests.RequestException as err:
-        print(f"Oops! Reconnect and try again.")
+        print(f"Oops! Check your connection and try again.")
         return
 
     books = parse_all_openlibrary_results(data)
@@ -424,7 +440,7 @@ def handle_search(query):
 
     download_book(match, format_choice)
 
-# --- split "title by author" into separate parts, if written that way ---
+# split "title by author" into separate parts, if written that way
 def split_title_and_author(query):
     lowered = query.lower()
     if " by " in lowered:
@@ -434,7 +450,7 @@ def split_title_and_author(query):
         return title, author
     return query.strip(), ""
 
-# --- help text, ---
+# help text,
 def show_help():
     from rich.panel import Panel
     from rich.table import Table
@@ -466,7 +482,7 @@ def show_help():
     )
     console.print()
 
-# --- Step 4: the CLI loop ---
+#  the CLI loop
 def main():
     load_config()
     show_brand()

@@ -1,5 +1,5 @@
 def parse_openlibrary_book(raw_entry):
-    """One raw Open Library doc in, one clean dict out."""
+    "One raw Open Library doc in, one clean dict out."
     title = raw_entry.get("title")
 
     names = raw_entry.get("author_name", [])
@@ -11,7 +11,7 @@ def parse_openlibrary_book(raw_entry):
     }
 
 def parse_book(raw_entry):
-    """One raw Gutendex entry in, one clean dict out."""
+    "One raw Gutendex entry in, one clean dict out."
     title = raw_entry.get("title")
 
     names = [a.get("name", "Unknown") for a in raw_entry.get("authors", [])]
